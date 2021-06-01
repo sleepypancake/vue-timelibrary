@@ -49,9 +49,11 @@
                 )
                 span.time-title Minutes
                 input.time-input(
-                  type="numder"
+                  type="number"
                   v-model="filmMinutes"
                 )
+
+                p {{ filmTime }}
 
               // Serial Time
               .total-time__serial(
@@ -67,11 +69,24 @@
                   type="number"
                   v-model="serialSeries"
                 )
+                span.time-title How long is one series? (minutes)
+                input.time-input(
+                  type="number"
+                  v-model="serialSeriesMinutes"
+                )
+
+                p {{ serialTime }}
 
             .tag-list
-              .ui-tag__wrapper
-                .ui-tag
-                  span.tag-title Dogs
+              .ui-tag__wrapper(
+                v-for="tag in tags"
+                :key="tag.title"
+              )
+                .ui-tag(
+                  @click="addTagUsed(tag)"
+                  :class="{active: tag.use}"
+                )
+                  span.tag-title {{ tag.title }}
                   span.button-close
 </template>
 
@@ -82,7 +97,33 @@ export default {
       taskTitle: '',
       taskDescription: '',
       whatWatch: 'Film',
-      taskID: 3
+      taskID: 3,
+
+      // Total Time
+      // Film
+      filmHours: 1,
+      filmMinutes: 30,
+      // Serial
+      serialSeason: 1,
+      serialSeries: 11,
+      serialSeriesMinutes: 40,
+
+      // Tags
+      tagsUsed: [],
+      tags: [
+        {
+          title: 'Comedy',
+          use: false
+        },
+        {
+          title: 'Western',
+          use: false
+        },
+        {
+          title: 'Adventure',
+          use: false
+        }
+      ]
     }
   },
   methods: {
@@ -90,11 +131,18 @@ export default {
       if (this.taskTitle === '') {
         return
       }
+      let time
+      if (this.whatWatch === 'Film') {
+        time = this.filmTime
+      } else {
+        time = this.serialTime
+      }
       const task = {
         id: this.taskId,
         title: this.taskTitle,
         description: this.taskDescription,
         whatWatch: this.whatWatch,
+        time,
         completed: false,
         editing: false
       }
@@ -104,6 +152,29 @@ export default {
       this.taskId += 1
       this.taskTitle = ''
       this.taskDescription = ''
+    },
+    getHoursAndMinutes (minutes) {
+      let hours = Math.trunc(minutes / 60)
+      let min = minutes % 60
+      return `${hours} hours ${min} minutes`
+    },
+    addTagUsed (tag) {
+      tag.use = !tag.use
+      if (tag.use) {
+        this.tagsUsed.push(tag.title)
+      } else {
+        this.tagsUsed.splice(tag.title, 1)
+      }
+    }
+  },
+  computed: {
+    filmTime () {
+      let min = this.filmHours * 60 + parseInt(this.filmMinutes)
+      return this.getHoursAndMinutes(min)
+    },
+    serialTime () {
+      let min = this.serialSeason * this.serialSeries * this.serialSeriesMinutes
+      return this.getHoursAndMinutes(min)
     }
   }
 }
@@ -121,4 +192,12 @@ export default {
 
   .total-time
     margin-bottom 20px
+
+  .time-title
+    display block
+    margin-bottom 6px
+
+  .time-input
+    max-width 80px
+    margin-right 10px
 </style>
