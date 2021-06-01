@@ -77,6 +77,32 @@
 
                 p {{ serialTime }}
 
+            // TAG LIST
+            // Add New Tag
+            .tag-list.tag-list--add
+              .ui-tag__wrapper(
+                @click="tagMenuShow = !tagMenuShow"
+              )
+                .ui-tag
+                  span.tag-title Add new
+                  span.button-close(
+                    :class="{ active: !tagMenuShow }"
+                  )
+            // Show Input
+            .tag-list.tag-list--menu(
+              v-if="tagMenuShow"
+            )
+              input.tag-add--input(
+                type="text"
+                placeholder="New tag"
+                v-model="tagTitle"
+                @keyup.enter="newTag"
+              )
+              .button.button-default(
+                @click="newTag"
+              ) Send
+
+            // All Tags
             .tag-list
               .ui-tag__wrapper(
                 v-for="tag in tags"
@@ -84,10 +110,15 @@
               )
                 .ui-tag(
                   @click="addTagUsed(tag)"
-                  :class="{active: tag.use}"
+                  :class="{used: tag.use}"
                 )
                   span.tag-title {{ tag.title }}
                   span.button-close
+
+            .option-list
+              button.button--round.button-primary(
+                @click="newTask"
+              ) Send
 </template>
 
 <script>
@@ -109,6 +140,8 @@ export default {
       serialSeriesMinutes: 40,
 
       // Tags
+      tagMenuShow: false,
+      tagTitle: '',
       tagsUsed: [],
       tags: [
         {
@@ -143,6 +176,7 @@ export default {
         description: this.taskDescription,
         whatWatch: this.whatWatch,
         time,
+        tagsUsed: this.tagsUsed,
         completed: false,
         editing: false
       }
@@ -152,6 +186,7 @@ export default {
       this.taskId += 1
       this.taskTitle = ''
       this.taskDescription = ''
+      this.tagsUsed = []
     },
     getHoursAndMinutes (minutes) {
       let hours = Math.trunc(minutes / 60)
@@ -165,6 +200,15 @@ export default {
       } else {
         this.tagsUsed.splice(tag.title, 1)
       }
+    },
+    newTag () {
+      if (this.tagTitle === '') {
+        return
+      }
+      this.tags.push({
+        title: this.tagTitle,
+        use: true
+      })
     }
   },
   computed: {
@@ -190,6 +234,7 @@ export default {
       &:last-child
         margin-right 0
 
+  // Time
   .total-time
     margin-bottom 20px
 
@@ -200,4 +245,38 @@ export default {
   .time-input
     max-width 80px
     margin-right 10px
+
+  // Tags
+  .tag-list
+    margin-bottom 20px
+
+  .ui-tag__wrapper
+    margin-right 18px
+    margin-bottom 10px
+    &:last-child
+      margin-right 0
+
+  .ui-tag
+    .button-close
+      &.active
+        transform: rotate(45deg)
+    &.used
+      background-color #444ce0
+      color #fff
+      .button-close
+        &:before,
+        &:after
+          background-color #fff
+
+  // Tag Menu Show
+  .tag-list--menu
+    display flex
+    justify-content space-between
+    align-items center
+
+  // New Tag Input
+  .tag-add--input
+    margin-bottom 0
+    margin-right 10px
+    height 42px
 </style>
