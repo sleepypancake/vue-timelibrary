@@ -34,44 +34,45 @@
               label(
                 for="radioSerial"
               ) Serial
+
+            // TOTAL TIME
             .total-time
+
+              // Film Time
               .total-time__film(
                 v-if="whatWatch === 'Film'"
               )
-                span Total Film Times
+                span.time-title Hours
+                input.time-input(
+                  type="number"
+                  v-model="filmHours"
+                )
+                span.time-title Minutes
+                input.time-input(
+                  type="numder"
+                  v-model="filmMinutes"
+                )
+
+              // Serial Time
               .total-time__serial(
                 v-if="whatWatch === 'Serial'"
               )
-                span Total Serial Times
+                span.time-title How many season?
+                input.time-input(
+                  type="number"
+                  v-model="serialSeason"
+                )
+                span.time-title How many series?
+                input.time-input(
+                  type="number"
+                  v-model="serialSeries"
+                )
+
             .tag-list
               .ui-tag__wrapper
                 .ui-tag
                   span.tag-title Dogs
                   span.button-close
-    section
-      .container
-        .task-list
-          .task-item(
-            v-for="task in tasks"
-            :key="task.id"
-            :class="{ completed: task.completed }"
-          )
-            .ui-card.ui-card--shadow
-              .task-item__info
-                .task-item__main-info
-                  span.ui-label.ui-label--light {{ task.whatWatch }}
-                  span Total Time:
-                span.button-close
-              .task-item__content
-                .task-item__header
-                  .ui-checkbox-wrapper
-                    input.ui-checkbox(
-                      type='checkbox'
-                      v-model="task.completed"
-                      )
-                  span.ui-title-3 {{ task.title }}
-                .task-item__body
-                  p.ui-text-regular {{ task.description }}
 </template>
 
 <script>
@@ -81,25 +82,7 @@ export default {
       taskTitle: '',
       taskDescription: '',
       whatWatch: 'Film',
-      taskID: 3,
-      tasks: [
-        {
-          'id': 1,
-          'title': 'GrowthBusters: Hooked on Growth',
-          'description': 'I directed this documentary challenging the myths linking growth with prosperity and fulfillment. It explores how our beliefs about economic and consumption',
-          'whatWatch': 'Film',
-          'completed': false,
-          'editing': false
-        },
-        {
-          'id': 2,
-          'title': 'Game of thrones',
-          'description': 'Best serials',
-          'whatWatch': 'Serial',
-          'completed': false,
-          'editing': false
-        }
-      ]
+      taskID: 3
     }
   },
   methods: {
@@ -107,14 +90,15 @@ export default {
       if (this.taskTitle === '') {
         return
       }
-      this.tasks.push({
+      const task = {
         id: this.taskId,
         title: this.taskTitle,
         description: this.taskDescription,
         whatWatch: this.whatWatch,
         completed: false,
         editing: false
-      })
+      }
+      console.log(task)
 
       // Reset
       this.taskId += 1
@@ -134,32 +118,7 @@ export default {
       margin-right 20px
       &:last-child
         margin-right 0
-  .task-item
-    margin-bottom 20px
-    &:last-child
-      margin-bottom 0
 
   .total-time
     margin-bottom 20px
-
-  .ui-label
-    margin-right 8px
-
-  .task-item__info
-    display flex
-    align-items center
-    justify-content space-between
-    margin-bottom 20px
-    .button-close
-      width 20px
-      height @width
-
-  .task-item__header
-    display flex
-    align-items center
-    margin-bottom 18px
-    .ui-checkbox-wrapper
-      margin-right 8px
-    .ui-title-3
-      margin-bottom 0
 </style>
